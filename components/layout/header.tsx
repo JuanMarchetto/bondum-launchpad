@@ -24,7 +24,7 @@ export function Header() {
       </div>
       <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
         <Link
-          href="/create-coin"
+          href="/create"
           className="px-4 sm:px-6 py-2.5 rounded-full border-2 border-[#7C6BF0] text-gray-800 font-medium hover:bg-[#7C6BF0]/10 transition-colors"
         >
           Create Coin
