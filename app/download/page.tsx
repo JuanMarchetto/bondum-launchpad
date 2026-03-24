@@ -1,4 +1,10 @@
 import { Smartphone } from "lucide-react"
+import type { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "Download the App - Bondum",
+  description: "Download the Bondum app to collect and redeem loyalty tokens.",
+}
 
 export default function DownloadPage() {
   return (

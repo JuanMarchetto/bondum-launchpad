@@ -2,6 +2,24 @@ import { apiFetch } from "@/lib/api"
 import { ChevronLeft, Globe } from "lucide-react"
 import Link from "next/link"
 import type { BrandWithCoin } from "@/types"
+import type { Metadata } from "next"
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ mint: string }>
+}): Promise<Metadata> {
+  const { mint } = await params
+  try {
+    const data = await apiFetch<BrandWithCoin>(`/coins/${mint}`)
+    return {
+      title: `${data.name} ($${data.ticker}) - Bondum`,
+      description: data.description || `${data.name} loyalty coin on Solana`,
+    }
+  } catch {
+    return { title: "Coin Not Found - Bondum" }
+  }
+}
 
 export default async function CoinDetailPage({
   params,

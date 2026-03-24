@@ -2,6 +2,12 @@ import { apiFetch } from "@/lib/api"
 import { BrandCard } from "@/components/brand/brand-card"
 import { CategoryFilter } from "@/components/coins/category-filter"
 import type { BrandWithCoin, Category, PaginatedResponse } from "@/types"
+import type { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "Brands Directory - Bondum",
+  description: "Discover brands with on-chain loyalty programs on Solana.",
+}
 
 export default async function BrandsPage({
   searchParams,

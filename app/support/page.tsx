@@ -1,4 +1,10 @@
 import { HelpCircle, Mail, MessageCircle } from "lucide-react"
+import type { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "Support - Bondum",
+  description: "Get help with Bondum loyalty coins and the platform.",
+}
 
 const faqs = [
   {
