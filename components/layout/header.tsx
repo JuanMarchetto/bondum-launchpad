@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { Search } from "lucide-react"
 import { MobileNav } from "@/components/layout/mobile-nav"
+import { SignInButton } from "@/components/auth/sign-in-button"
 
 export function Header() {
   return (
@@ -28,9 +29,7 @@ export function Header() {
         >
           Create Coin
         </Link>
-        <button className="px-4 sm:px-6 py-2.5 rounded-full bg-[#7C6BF0] text-white font-medium hover:bg-[#6B5AD0] transition-colors">
-          Sign In
-        </button>
+        <SignInButton />
       </div>
     </header>
   )

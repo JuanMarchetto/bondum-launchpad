@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
+import { PrivyProviderWrapper } from "@/components/auth/privy-provider"
 import { Sidebar } from "@/components/layout/sidebar"
 import { Header } from "@/components/layout/header"
 import "./globals.css"
@@ -49,14 +50,16 @@ export default function RootLayout({
       <body
         className={`${geist.variable} ${geistMono.variable} font-sans antialiased`}
       >
-        <Sidebar />
-        <div className="lg:ml-56 min-h-screen bg-[#F5F3FF]">
-          <div className="p-4 sm:p-6 lg:p-8">
-            <Header />
-            <main>{children}</main>
+        <PrivyProviderWrapper>
+          <Sidebar />
+          <div className="lg:ml-56 min-h-screen bg-[#F5F3FF]">
+            <div className="p-4 sm:p-6 lg:p-8">
+              <Header />
+              <main>{children}</main>
+            </div>
           </div>
-        </div>
-        <Analytics />
+          <Analytics />
+        </PrivyProviderWrapper>
       </body>
     </html>
   )
