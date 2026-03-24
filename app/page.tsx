@@ -6,18 +6,24 @@ import type { BrandWithCoin, Category, PaginatedResponse } from "@/types"
 export default async function HomePage({
   searchParams,
 }: {
-  searchParams: Promise<{ category?: string }>
+  searchParams: Promise<{ category?: string; search?: string }>
 }) {
   const params = await searchParams
   const categorySlug = params.category
+  const searchQuery = params.search
 
   let coins: BrandWithCoin[] = []
   let categories: Category[] = []
 
   try {
+    const query = new URLSearchParams()
+    if (categorySlug) query.set("category", categorySlug)
+    if (searchQuery) query.set("search", searchQuery)
+    const queryString = query.toString()
+
     const [coinsRes, catsRes] = await Promise.all([
       apiFetch<PaginatedResponse<BrandWithCoin>>(
-        `/coins${categorySlug ? `?category=${categorySlug}` : ""}`
+        `/coins${queryString ? `?${queryString}` : ""}`
       ),
       apiFetch<{ data: Category[] }>("/categories"),
     ])

@@ -1,11 +1,12 @@
 "use client"
 
-import { useRouter, useSearchParams } from "next/navigation"
+import { useRouter, useSearchParams, usePathname } from "next/navigation"
 import type { Category } from "@/types"
 
 export function CategoryFilter({ categories, selected }: { categories: Category[]; selected?: string }) {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const pathname = usePathname()
 
   function selectCategory(slug: string | null) {
     const params = new URLSearchParams(searchParams.toString())
@@ -14,7 +15,7 @@ export function CategoryFilter({ categories, selected }: { categories: Category[
     } else {
       params.delete("category")
     }
-    router.push(`/?${params.toString()}`)
+    router.push(`${pathname}?${params.toString()}`)
   }
 
   return (
