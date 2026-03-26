@@ -1,7 +1,7 @@
 import { apiFetch } from "@/lib/api"
-import { ChevronLeft, Globe } from "lucide-react"
+import { ChevronLeft, Globe, Gift } from "lucide-react"
 import Link from "next/link"
-import type { BrandWithCoin } from "@/types"
+import type { BrandWithCoin, Discount } from "@/types"
 import type { Metadata } from "next"
 
 export async function generateMetadata({
@@ -28,18 +28,25 @@ export default async function CoinDetailPage({
 }) {
   const { mint } = await params
   let data: BrandWithCoin | null = null
+  let rewards: Discount[] = []
 
   try {
     data = await apiFetch<BrandWithCoin>(`/coins/${mint}`)
-  } catch {
-    return (
-      <div className="text-center py-16">
-        <p className="text-gray-500 text-lg">Coin not found</p>
-        <Link href="/" className="text-[#7C6BF0] hover:underline mt-4 inline-block">
-          Back to Home
-        </Link>
-      </div>
-    )
+    if (data?.id) {
+      const res = await apiFetch<{ data: Discount[] }>(`/brands/${data.id}/discounts`)
+      rewards = res.data ?? []
+    }
+  } catch (e) {
+    if (!data) {
+      return (
+        <div className="text-center py-16">
+          <p className="text-gray-500 text-lg">Coin not found</p>
+          <Link href="/" className="text-[#7C6BF0] hover:underline mt-4 inline-block">
+            Back to Home
+          </Link>
+        </div>
+      )
+    }
   }
 
   return (
@@ -79,6 +86,28 @@ export default async function CoinDetailPage({
             <div className="rounded-2xl border-2 border-[#7C6BF0]/30 p-6">
               <h3 className="font-bold text-gray-800 mb-2">About</h3>
               <p className="text-gray-600">{data.description}</p>
+            </div>
+          )}
+
+          {/* Rewards */}
+          {rewards.length > 0 && (
+            <div className="rounded-2xl border-2 border-[#7C6BF0]/30 p-6">
+              <h3 className="font-bold text-gray-800 mb-4 flex items-center gap-2">
+                <Gift size={20} className="text-[#7C6BF0]" /> Available Rewards
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {rewards.map((reward) => (
+                  <div
+                    key={reward.id}
+                    className="flex items-center justify-between p-3 rounded-xl bg-[#F5F3FF] border border-[#7C6BF0]/20"
+                  >
+                    <span className="font-medium text-gray-800">{reward.name}</span>
+                    <span className="text-sm font-bold text-[#7C6BF0] whitespace-nowrap ml-2">
+                      {reward.tokensRequired.toLocaleString()} ${data!.ticker}
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
 
