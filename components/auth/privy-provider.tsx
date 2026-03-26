@@ -2,6 +2,9 @@
 
 import { createContext, useContext } from "react"
 import { PrivyProvider, usePrivy } from "@privy-io/react-auth"
+import { toSolanaWalletConnectors } from "@privy-io/react-auth/solana"
+
+const solanaConnectors = toSolanaWalletConnectors()
 
 const PRIVY_APP_ID = process.env.NEXT_PUBLIC_PRIVY_APP_ID
 const isPrivyConfigured =
@@ -58,6 +61,11 @@ export function PrivyProviderWrapper({
           theme: "light",
           accentColor: "#7C6BF0",
           logo: "/b-logo.png",
+        },
+        externalWallets: {
+          solana: {
+            connectors: solanaConnectors,
+          },
         },
         embeddedWallets: {
           solana: {
