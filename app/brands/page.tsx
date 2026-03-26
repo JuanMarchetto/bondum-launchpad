@@ -28,7 +28,7 @@ export default async function BrandsPage({
       apiFetch<{ data: Category[] }>("/categories"),
     ])
     brands = brandsRes.data
-    categories = catsRes.data
+    categories = Array.isArray(catsRes) ? catsRes : catsRes.data
   } catch {
     // API not available
   }
