@@ -57,7 +57,7 @@ export function PrivyProviderWrapper({
         appearance: {
           theme: "light",
           accentColor: "#7C6BF0",
-          logo: "/icon.svg",
+          logo: "/b-logo.png",
         },
         embeddedWallets: {
           solana: {

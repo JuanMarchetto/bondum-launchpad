@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { usePathname } from "next/navigation"
 import { Home, User, Award, Download, HelpCircle, Menu, X } from "lucide-react"
 
@@ -43,11 +44,10 @@ export function MobileNav() {
       >
         {/* Logo + close */}
         <div className="p-6 flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-white tracking-wide">
-            B
-            <span className="inline-block w-4 h-4 rounded-full border-2 border-white mx-0.5" />
-            NDUM
-          </h1>
+          <div className="flex items-center gap-2">
+            <Image src="/b-logo.png" alt="Bondum" width={32} height={32} />
+            <span className="text-xl font-bold text-white tracking-wide">BONDUM</span>
+          </div>
           <button
             className="text-white"
             onClick={() => setOpen(false)}
