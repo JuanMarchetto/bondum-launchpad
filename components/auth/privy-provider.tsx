@@ -61,6 +61,8 @@ export function PrivyProviderWrapper({
           theme: "light",
           accentColor: "#7C6BF0",
           logo: "/b-logo.png",
+          walletChainType: "solana-only",
+          walletList: ["detected_wallets"],
         },
         externalWallets: {
           solana: {
