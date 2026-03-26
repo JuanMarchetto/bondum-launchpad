@@ -29,7 +29,23 @@ export function DeployButton({ formData }: DeployButtonProps) {
         ? formData.locations.split(",").map((l: string) => l.trim()).filter(Boolean)
         : []
 
-      // 1. Prepare deploy
+      // 1. Prepare deploy — strip empty optional fields
+      const payload: Record<string, any> = {
+        name: formData.name,
+        ticker: formData.ticker,
+        categoryId: Number(formData.categoryId),
+        totalSupply: Number(formData.totalSupply),
+        decimals: Number(formData.decimals),
+        distribution: formData.distribution,
+        idempotencyKey,
+        locations,
+      }
+      if (formData.description) payload.description = formData.description
+      if (formData.slogan) payload.slogan = formData.slogan
+      if (formData.socials) payload.socials = { website: formData.socials }
+      if (formData.logoUrl) payload.logoUrl = formData.logoUrl
+      if (formData.bannerUrl) payload.bannerUrl = formData.bannerUrl
+
       const result = await apiFetch<{
         brandId: string
         coinId: string
@@ -38,14 +54,7 @@ export function DeployButton({ formData }: DeployButtonProps) {
       }>("/coins/prepare-deploy", {
         method: "POST",
         token,
-        body: JSON.stringify({
-          ...formData,
-          locations,
-          socials: formData.socials ? { website: formData.socials } : {},
-          totalSupply: Number(formData.totalSupply),
-          decimals: Number(formData.decimals),
-          idempotencyKey,
-        }),
+        body: JSON.stringify(payload),
       })
 
       // 2. Deserialize, sign with wallet, and send

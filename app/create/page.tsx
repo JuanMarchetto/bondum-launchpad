@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { ChevronRight, MapPin, Globe, Instagram } from "lucide-react"
 import { ProgressSteps } from "@/components/create/progress-steps"
+import { ImageUpload } from "@/components/create/image-upload"
 
 export default function CreateStep1() {
   const router = useRouter()
@@ -110,6 +111,20 @@ export default function CreateStep1() {
                 <Instagram size={18} />
               </div>
             </div>
+          </div>
+          <div className="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <ImageUpload
+              label="Brand Logo"
+              value={form.logoUrl}
+              onChange={(url) => update("logoUrl", url)}
+              aspect="square"
+            />
+            <ImageUpload
+              label="Banner Image"
+              value={form.bannerUrl}
+              onChange={(url) => update("bannerUrl", url)}
+              aspect="wide"
+            />
           </div>
         </div>
         <div className="flex justify-end mt-8">
