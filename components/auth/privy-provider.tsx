@@ -2,9 +2,6 @@
 
 import { createContext, useContext } from "react"
 import { PrivyProvider, usePrivy } from "@privy-io/react-auth"
-import { toSolanaWalletConnectors } from "@privy-io/react-auth/solana"
-
-const solanaConnectors = toSolanaWalletConnectors()
 
 const PRIVY_APP_ID = process.env.NEXT_PUBLIC_PRIVY_APP_ID
 const isPrivyConfigured =
@@ -56,18 +53,11 @@ export function PrivyProviderWrapper({
     <PrivyProvider
       appId={PRIVY_APP_ID!}
       config={{
-        loginMethods: ["email", "wallet"],
+        loginMethods: ["email"],
         appearance: {
           theme: "light",
           accentColor: "#7C6BF0",
           logo: "/b-logo.png",
-          walletChainType: "solana-only",
-          walletList: ["detected_wallets"],
-        },
-        externalWallets: {
-          solana: {
-            connectors: solanaConnectors,
-          },
         },
         embeddedWallets: {
           solana: {
