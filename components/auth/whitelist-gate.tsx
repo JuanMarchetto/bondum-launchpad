@@ -25,9 +25,11 @@ export function WhitelistGate({ children }: { children: React.ReactNode }) {
         )
 
         if (!cancelled) {
+          console.log("[WhitelistGate] response:", res)
           setStatus(res.whitelisted ? "allowed" : "blocked")
         }
-      } catch {
+      } catch (err) {
+        console.error("[WhitelistGate] error:", err)
         if (!cancelled) setStatus("blocked")
       }
     }
@@ -56,7 +58,7 @@ export function WhitelistGate({ children }: { children: React.ReactNode }) {
             Coin creation is currently limited to approved brands. Contact us to request early access.
           </p>
           <a
-            href="mailto:hello@bondum.xyz"
+            href="mailto:fede@bondum.xyz"
             className="inline-block px-6 py-3 bg-[#7C6BF0] text-white rounded-full font-medium hover:bg-[#6B5AD0] transition-colors"
           >
             Request Access
