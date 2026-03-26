@@ -28,7 +28,7 @@ export default async function HomePage({
       apiFetch<{ data: Category[] }>("/categories"),
     ])
     coins = coinsRes.data
-    categories = catsRes.data
+    categories = Array.isArray(catsRes) ? catsRes : catsRes.data
   } catch {
     // API not available yet — show empty state
   }
