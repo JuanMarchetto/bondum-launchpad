@@ -59,6 +59,12 @@ export function PrivyProviderWrapper({
           accentColor: "#7C6BF0",
           logo: "/b-logo.png",
         },
+        solanaClusters: [
+          {
+            name: "mainnet-beta",
+            rpcUrl: process.env.NEXT_PUBLIC_SOLANA_RPC_URL || "https://api.mainnet-beta.solana.com",
+          },
+        ],
         embeddedWallets: {
           solana: {
             createOnLogin: "users-without-wallets",
