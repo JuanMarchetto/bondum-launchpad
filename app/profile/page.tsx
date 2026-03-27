@@ -2,7 +2,9 @@
 
 import { useState, useEffect, useCallback } from "react"
 import { usePrivy } from "@privy-io/react-auth"
+import Link from "next/link"
 import { apiFetch } from "@/lib/api"
+import { Settings } from "lucide-react"
 import { StatsRow } from "@/components/brand/stats-row"
 import { BalanceList } from "@/components/brand/balance-list"
 import { DiscountTable } from "@/components/brand/discount-table"
@@ -65,18 +67,30 @@ export default function ProfilePage() {
         ]}
       />
 
-      {brands.length > 1 && (
-        <select
-          value={selectedBrand}
-          onChange={(e) => setSelectedBrand(e.target.value)}
-          className="mb-6 px-4 py-2 rounded-xl border-2 border-[#7C6BF0]/30 bg-[#F5F3FF] focus:outline-none focus:border-[#7C6BF0]"
-        >
-          {brands.map((b) => (
-            <option key={b.id} value={b.id}>
-              {b.name} (${b.ticker})
-            </option>
-          ))}
-        </select>
+      {brands.length > 0 && (
+        <div className="flex items-center gap-4 mb-6">
+          {brands.length > 1 && (
+            <select
+              value={selectedBrand}
+              onChange={(e) => setSelectedBrand(e.target.value)}
+              className="px-4 py-2 rounded-xl border-2 border-[#7C6BF0]/30 bg-[#F5F3FF] focus:outline-none focus:border-[#7C6BF0]"
+            >
+              {brands.map((b) => (
+                <option key={b.id} value={b.id}>
+                  {b.name} (${b.ticker})
+                </option>
+              ))}
+            </select>
+          )}
+          {selectedBrand && (
+            <Link
+              href={`/brands/${selectedBrand}/manage`}
+              className="flex items-center gap-2 px-5 py-2.5 bg-[#7C6BF0] text-white rounded-full font-medium hover:bg-[#6B5AD0] transition-colors"
+            >
+              <Settings size={16} /> Manage Rewards
+            </Link>
+          )}
+        </div>
       )}
 
       <div className="flex gap-2 mb-6">
