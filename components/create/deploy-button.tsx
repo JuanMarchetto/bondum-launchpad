@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { usePrivy } from "@privy-io/react-auth"
+import { usePrivy, useWallets } from "@privy-io/react-auth"
 import { useRouter } from "next/navigation"
 import { apiFetch } from "@/lib/api"
 import { deserializeTransaction, confirmTransaction, connection } from "@/lib/solana"
@@ -11,7 +11,8 @@ type DeployButtonProps = {
 }
 
 export function DeployButton({ formData }: DeployButtonProps) {
-  const { getAccessToken, user } = usePrivy()
+  const { getAccessToken } = usePrivy()
+  const { wallets } = useWallets()
   const router = useRouter()
   const [status, setStatus] = useState<"idle" | "preparing" | "signing" | "confirming" | "done" | "error">("idle")
   const [error, setError] = useState("")
@@ -61,15 +62,17 @@ export function DeployButton({ formData }: DeployButtonProps) {
       setStatus("signing")
       const tx = deserializeTransaction(result.serializedTx)
 
-      // Get the Solana wallet from Privy
-      const solanaWallet = (user?.linkedAccounts as any[])?.find(
-        (a: any) => a.type === "wallet" && a.chainType === "solana"
-      ) as any
+      // Get the embedded Solana wallet from Privy's useWallets()
+      const solanaWallet = wallets.find(
+        (w) => (w as any).walletClientType === "privy" && (w as any).chainId?.startsWith("solana")
+      ) || wallets.find(
+        (w) => (w as any).chainType === "solana"
+      )
 
-      if (!solanaWallet) throw new Error("No Solana wallet found")
+      if (!solanaWallet) throw new Error("No Solana wallet found. Please try logging out and back in.")
 
-      // Sign with the user's wallet via Privy
-      const provider = await solanaWallet.getProvider()
+      // Sign with the user's embedded wallet via Privy
+      const provider = await (solanaWallet as any).getProvider()
       const signedTx = await provider.signTransaction(tx)
 
       // Send the fully-signed transaction
