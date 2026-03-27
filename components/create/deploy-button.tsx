@@ -63,13 +63,15 @@ export function DeployButton({ formData }: DeployButtonProps) {
       const tx = deserializeTransaction(result.serializedTx)
 
       // Get the embedded Solana wallet from Privy's useWallets()
+      console.log("[deploy] wallets:", wallets.map(w => ({ address: w.address, type: (w as any).walletClientType, chain: (w as any).chainId || (w as any).chainType })))
+
       const solanaWallet = wallets.find(
-        (w) => (w as any).walletClientType === "privy" && (w as any).chainId?.startsWith("solana")
+        (w) => (w as any).chainId?.startsWith("solana")
       ) || wallets.find(
-        (w) => (w as any).chainType === "solana"
+        (w) => (w as any).walletClientType === "privy"
       )
 
-      if (!solanaWallet) throw new Error("No Solana wallet found. Please try logging out and back in.")
+      if (!solanaWallet) throw new Error("No Solana wallet found. Available: " + wallets.map(w => `${w.address}(${(w as any).chainId || (w as any).chainType})`).join(", "))
 
       // Sign with the user's embedded wallet via Privy
       const provider = await (solanaWallet as any).getProvider()
