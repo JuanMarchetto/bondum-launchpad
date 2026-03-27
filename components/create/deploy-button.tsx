@@ -1,10 +1,11 @@
 "use client"
 
 import { useState } from "react"
-import { usePrivy, useWallets } from "@privy-io/react-auth"
+import { usePrivy } from "@privy-io/react-auth"
+import { useWallets, useSignAndSendTransaction } from "@privy-io/react-auth/solana"
 import { useRouter } from "next/navigation"
 import { apiFetch } from "@/lib/api"
-import { deserializeTransaction, confirmTransaction, connection } from "@/lib/solana"
+import { deserializeTransaction, confirmTransaction } from "@/lib/solana"
 
 type DeployButtonProps = {
   formData: Record<string, any>
@@ -12,7 +13,8 @@ type DeployButtonProps = {
 
 export function DeployButton({ formData }: DeployButtonProps) {
   const { getAccessToken } = usePrivy()
-  const { wallets } = useWallets()
+  const { wallets: solanaWallets, ready: walletsReady } = useWallets()
+  const { signAndSendTransaction } = useSignAndSendTransaction()
   const router = useRouter()
   const [status, setStatus] = useState<"idle" | "preparing" | "signing" | "confirming" | "done" | "error">("idle")
   const [error, setError] = useState("")
@@ -58,27 +60,21 @@ export function DeployButton({ formData }: DeployButtonProps) {
         body: JSON.stringify(payload),
       })
 
-      // 2. Deserialize, sign with wallet, and send
+      // 2. Deserialize and sign with embedded Solana wallet
       setStatus("signing")
       const tx = deserializeTransaction(result.serializedTx)
 
-      // Get the embedded Solana wallet from Privy's useWallets()
-      console.log("[deploy] wallets:", wallets.map(w => ({ address: w.address, type: (w as any).walletClientType, chain: (w as any).chainId || (w as any).chainType })))
+      // Get the embedded Solana wallet from Privy's Solana useWallets()
+      const wallet = solanaWallets[0]
+      if (!wallet) throw new Error("No Solana wallet found. Please try logging out and back in.")
 
-      const solanaWallet = wallets.find(
-        (w) => (w as any).chainId?.startsWith("solana")
-      ) || wallets.find(
-        (w) => (w as any).walletClientType === "privy"
-      )
+      // Sign and send via Privy's Solana SDK
+      const { signature } = await signAndSendTransaction({
+        transaction: tx.serialize(),
+        wallet,
+      })
 
-      if (!solanaWallet) throw new Error("No Solana wallet found. Available: " + wallets.map(w => `${w.address}(${(w as any).chainId || (w as any).chainType})`).join(", "))
-
-      // Sign with the user's embedded wallet via Privy
-      const provider = await (solanaWallet as any).getProvider()
-      const signedTx = await provider.signTransaction(tx)
-
-      // Send the fully-signed transaction
-      const txSignature = await connection.sendRawTransaction(signedTx.serialize())
+      const txSignature = Buffer.from(signature).toString("base64")
 
       // 3. Confirm on-chain
       setStatus("confirming")
@@ -92,7 +88,7 @@ export function DeployButton({ formData }: DeployButtonProps) {
         body: JSON.stringify({
           brandId: result.brandId,
           mintAddress: result.mintAddress,
-          txSignature: txSignature,
+          txSignature,
         }),
       })
 
