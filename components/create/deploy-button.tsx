@@ -2,10 +2,10 @@
 
 import { useState } from "react"
 import { usePrivy } from "@privy-io/react-auth"
-import { useWallets, useSignAndSendTransaction } from "@privy-io/react-auth/solana"
+import { useWallets } from "@privy-io/react-auth/solana"
 import { useRouter } from "next/navigation"
 import { apiFetch } from "@/lib/api"
-import { deserializeTransaction, confirmTransaction } from "@/lib/solana"
+import { deserializeTransaction, confirmTransaction, connection } from "@/lib/solana"
 
 type DeployButtonProps = {
   formData: Record<string, any>
@@ -13,8 +13,7 @@ type DeployButtonProps = {
 
 export function DeployButton({ formData }: DeployButtonProps) {
   const { getAccessToken } = usePrivy()
-  const { wallets: solanaWallets, ready: walletsReady } = useWallets()
-  const { signAndSendTransaction } = useSignAndSendTransaction()
+  const { wallets: solanaWallets } = useWallets()
   const router = useRouter()
   const [status, setStatus] = useState<"idle" | "preparing" | "signing" | "confirming" | "done" | "error">("idle")
   const [error, setError] = useState("")
@@ -68,15 +67,14 @@ export function DeployButton({ formData }: DeployButtonProps) {
       const wallet = solanaWallets[0]
       if (!wallet) throw new Error("No Solana wallet found. Please try logging out and back in.")
 
-      // Sign and send via Privy's Solana SDK
-      // The tx is partially signed by the mint keypair — serialize without requiring all signatures
+      // Sign with Privy wallet, send via our own RPC (Triton)
       const txBytes = tx.serialize({ requireAllSignatures: false })
-      const { signature } = await signAndSendTransaction({
+      const { signedTransaction } = await wallet.signTransaction({
         transaction: txBytes,
-        wallet,
       })
 
-      const txSignature = Buffer.from(signature).toString("base64")
+      // Send the fully-signed transaction via our RPC connection
+      const txSignature = await connection.sendRawTransaction(signedTransaction)
 
       // 3. Confirm on-chain
       setStatus("confirming")
