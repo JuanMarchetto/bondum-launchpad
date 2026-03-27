@@ -69,8 +69,10 @@ export function DeployButton({ formData }: DeployButtonProps) {
       if (!wallet) throw new Error("No Solana wallet found. Please try logging out and back in.")
 
       // Sign and send via Privy's Solana SDK
+      // The tx is partially signed by the mint keypair — serialize without requiring all signatures
+      const txBytes = tx.serialize({ requireAllSignatures: false })
       const { signature } = await signAndSendTransaction({
-        transaction: tx.serialize(),
+        transaction: txBytes,
         wallet,
       })
 
